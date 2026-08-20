@@ -78,7 +78,7 @@ def main():
     from rl_train.analyzer.gait_evaluate import GaitData, ImitationGaitEvaluator
     from myoassist_utils.eval_utils import build_composite, CompositeInputs, CMAPS
 
-    with open(os.path.join(log_dir, "session_config.json"), "r") as f:
+    with open(os.path.join(log_dir, "session_config.json"), "r", encoding="utf-8") as f:
         config_dict = json.load(f)
     config = DictionableDataclass.create(ImitationTrainSessionConfig, config_dict)
 

@@ -184,7 +184,7 @@ class EnvironmentHandler:
             ref_data_npz = np.load(config.env_params.reference_data_path, allow_pickle=True)
             ref_data_dict = {key: ref_data_npz[key].item() for key in ref_data_npz.files}
         elif config.env_params.reference_data_path.endswith(".json"):
-            with open(config.env_params.reference_data_path, "r") as f:
+            with open(config.env_params.reference_data_path, "r", encoding="utf-8") as f:
                 ref_data_dict = json.load(f)
         else:
             raise ValueError("Unsupported file format. Please use either .npz or .json.")
@@ -225,7 +225,7 @@ class EnvironmentHandler:
     def get_session_config_from_path(config_path, class_type):
         print(f"Loading config from {config_path}")
         config_file_path = config_path
-        with open(config_file_path, "r") as f:
+        with open(config_file_path, "r", encoding="utf-8") as f:
             config_dict = json.load(f)
             session_config = DictionableDataclass.create(class_type, config_dict)
         return session_config

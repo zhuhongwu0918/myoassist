@@ -490,7 +490,7 @@ class ImitationGaitEvaluator(GaitEvaluatorBase):
             # ref_data_dict = {key: ref_data_npz[key] for key in keys}
             ref_data_dict = {key: ref_data_npz[key].item() for key in ref_data_npz.files}
         elif self.session_config.env_params.reference_data_path.endswith(".json"):
-            with open(self.session_config.env_params.reference_data_path, "r") as f:
+            with open(self.session_config.env_params.reference_data_path, "r", encoding="utf-8") as f:
                 ref_data_dict = json.load(f)
         else:
             print(
