@@ -11,6 +11,10 @@ def _analyze_process(log_dir):
     """
     Independent function for analysis process
     """
+    import os
+    # Disable CUDA in the forked subprocess to avoid re-initialization error
+    os.environ['CUDA_VISIBLE_DEVICES'] = ''
+
     train_analyzer = TrainAnalyzer()
     train_analyzer.analyze_in_sequence(log_dir, show_plot=False)
 
@@ -146,19 +150,15 @@ class BaseCustomLearningCallback(BaseCallback):
             self.current_reward_dict_sum = [{} for _ in range(self.training_env.num_envs)]
 
         if self.log_count % self.evaluate_freq == 0 and self.log_count != 0:
-            # Create new pool each time to prevent memory leaks
-
-            # For debug:
-            # _analyze_process(self.train_log_handler.log_dir)
-
-            pool = Pool(processes=1)
-            try:
-                pool.apply(_analyze_process, args=(self.train_log_handler.log_dir,))
-            finally:
-                # Always cleanup pool resources, even if error occurs
-                pool.close()  # No more tasks
-                pool.join()  # Wait for worker processes to exit
-                # Note: If error occurred in pool.apply(), it will still propagate after cleanup
+            # Disabled to avoid CUDA multiprocessing errors during training
+            # Analysis can be run manually after training completes
+            pass
+            # pool = Pool(processes=1)
+            # try:
+            #     pool.apply(_analyze_process, args=(self.train_log_handler.log_dir,))
+            # finally:
+            #     pool.close()
+            #     pool.join()
         self.log_count += 1
 
         return log_data

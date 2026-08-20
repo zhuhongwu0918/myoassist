@@ -155,7 +155,7 @@
                                 0,
                                 8
                             ],
-                            "comment": "8 qpos without lumbar_extension"
+                            "comment": "8 个关节位置（不含腰椎伸展）"
                         },
                         {
                             "type": "range",
@@ -163,7 +163,7 @@
                                 8,
                                 17
                             ],
-                            "comment": "9 qvel without lumbar_extension"
+                            "comment": "9 个关节速度（不含腰椎伸展）"
                         },
                         {
                             "type": "range",
@@ -171,7 +171,7 @@
                                 17,
                                 28
                             ],
-                            "comment": "11 left muscle activation"
+                            "comment": "11 个左侧肌肉激活"
                         },
                         {
                             "type": "range",
@@ -179,7 +179,7 @@
                                 28,
                                 39
                             ],
-                            "comment": "11 right muscle activation"
+                            "comment": "11 个右侧肌肉激活"
                         },
                         {
                             "type": "range",
@@ -187,7 +187,7 @@
                                 39,
                                 43
                             ],
-                            "comment": "4 foot force"
+                            "comment": "4 个足底受力"
                         },
                         {
                             "type": "range",
@@ -195,7 +195,7 @@
                                 43,
                                 44
                             ],
-                            "comment": "target velocity"
+                            "comment": "目标速度"
                         }
                     ],
                     "action": [
@@ -209,7 +209,7 @@
                                 0,
                                 11
                             ],
-                            "comment": "r 11 muscle activation without exo"
+                            "comment": "右腿 11 个肌肉激活（不含外骨骼）"
                         },
                         {
                             "type": "range_mapping",
@@ -221,7 +221,7 @@
                                 11,
                                 22
                             ],
-                            "comment": "l 11 muscle activation without exo"
+                            "comment": "左腿 11 个肌肉激活（不含外骨骼）"
                         }
                     ]
                 },
@@ -233,7 +233,7 @@
                                 0,
                                 8
                             ],
-                            "comment": "8 qpos without lumbar_extension"
+                            "comment": "8 个关节位置（不含腰椎伸展）"
                         },
                         {
                             "type": "range",
@@ -241,7 +241,7 @@
                                 8,
                                 17
                             ],
-                            "comment": "9 qvel without lumbar_extension"
+                            "comment": "9 个关节速度（不含腰椎伸展）"
                         },
                         {
                             "type": "range",
@@ -249,7 +249,7 @@
                                 17,
                                 28
                             ],
-                            "comment": "11 left muscle activation"
+                            "comment": "11 个左侧肌肉激活"
                         },
                         {
                             "type": "range",
@@ -257,7 +257,7 @@
                                 28,
                                 39
                             ],
-                            "comment": "11 right muscle activation"
+                            "comment": "11 个右侧肌肉激活"
                         },
                         {
                             "type": "range",
@@ -265,7 +265,7 @@
                                 39,
                                 43
                             ],
-                            "comment": "4 foot force"
+                            "comment": "4 个足底受力"
                         },
                         {
                             "type": "range",
@@ -273,7 +273,7 @@
                                 43,
                                 44
                             ],
-                            "comment": "target velocity"
+                            "comment": "目标速度"
                         }
                     ]
                 },
@@ -291,7 +291,7 @@
                                 41,
                                 42
                             ],
-                            "comment": "hip_flexion angle, angular velocity and foot contact, right leg first then contralateral"
+                            "comment": "髋关节屈曲角度、角速度与足底接触，先右腿后对侧腿"
                         }
                     ],
                     "action": [
@@ -305,7 +305,7 @@
                                 22,
                                 23
                             ],
-                            "comment": "1 command for Exo_R"
+                            "comment": "1 个 Exo_R 命令"
                         }
                     ]
                 },
@@ -323,7 +323,7 @@
                                 42,
                                 41
                             ],
-                            "comment": "hip_flexion angle, angular velocity and foot contact, left leg first then contralateral"
+                            "comment": "髋关节屈曲角度、角速度与足底接触，先左腿后对侧腿"
                         }
                     ],
                     "action": [
@@ -337,7 +337,7 @@
                                 23,
                                 24
                             ],
-                            "comment": "1 command for Exo_L"
+                            "comment": "1 个 Exo_L 命令"
                         }
                     ]
                 }

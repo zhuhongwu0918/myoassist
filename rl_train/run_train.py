@@ -1,5 +1,9 @@
 import os
 
+# Disable CUDA in fork to avoid "Cannot re-initialize CUDA in forked subprocess"
+# This prevents PyTorch from initializing CUDA in the parent process before fork
+os.environ.setdefault('CUDA_VISIBLE_DEVICES', '')  # Will be reset after imports
+
 # Cap the OpenMP-family thread pools before numpy or torch is imported -- they read
 # these at import time, so this block has to stay above every other import.
 #
@@ -74,6 +78,10 @@ def ppo_evaluate_with_rendering(config):
 def ppo_train_with_parameters(config, train_time_step, is_rendering_on, train_log_handler):
     seed = 1234
     np.random.seed(seed)
+
+    # Restore CUDA visibility before creating environments (was disabled to allow fork)
+    if 'CUDA_VISIBLE_DEVICES' in os.environ and os.environ['CUDA_VISIBLE_DEVICES'] == '':
+        del os.environ['CUDA_VISIBLE_DEVICES']
 
     env = EnvironmentHandler.create_environment(config, is_rendering_on)
     model = EnvironmentHandler.get_stable_baselines3_model(config, env)

@@ -139,8 +139,8 @@ def _make_shared_side_exo(cfg: dict, env: dict, joint: str, exo_net_width: int |
                 {
                     "type": "index",
                     "index": indices,
-                    "comment": f"{joint} angle, angular velocity and foot contact, "
-                    f"{'right' if side == 'r' else 'left'} leg first then contralateral",
+                    "comment": f"{joint} 的角度、角速度与足底接触，"
+                    f"先{'右' if side == 'r' else '左'}腿后对侧腿",
                 }
             ],
             "action": [
@@ -148,7 +148,7 @@ def _make_shared_side_exo(cfg: dict, env: dict, joint: str, exo_net_width: int |
                     "type": "range_mapping",
                     "range_net": [0, 1],
                     "range_action": [slot, slot + 1],
-                    "comment": f"1 command for Exo_{side.upper()}",
+                    "comment": f"1 个 Exo_{side.upper()} 命令",
                 }
             ],
         }
@@ -299,18 +299,18 @@ def main() -> None:
                 {
                     "type": "index",
                     "index": [qpos_range[1] - 1, qpos_range[0]],
-                    "comment": f"2 {joint} angle, right then left (matches Exo_R, Exo_L)",
+                    "comment": f"2 个 {joint} 角度，先右后左（与 Exo_R、Exo_L 对应）",
                 },
                 {
                     "type": "index",
                     "index": [qvel_range[1] - 1, qvel_range[0]],
-                    "comment": f"2 {joint} angular velocity, right then left",
+                    "comment": f"2 个 {joint} 角速度，先右后左",
                 },
             ]
         else:
             exo["observation"] = [
-                {"type": "range", "range": qpos_range, "comment": f"2 {joint} angle (device assists this joint)"},
-                {"type": "range", "range": qvel_range, "comment": f"2 {joint} angular velocity"},
+                {"type": "range", "range": qpos_range, "comment": f"2 个 {joint} 角度（设备辅助该关节）"},
+                {"type": "range", "range": qvel_range, "comment": f"2 个 {joint} 角速度"},
             ]
 
         if args.exo_contact:
@@ -322,7 +322,7 @@ def main() -> None:
                 {
                     "type": "range",
                     "range": [sens_start, sens_start + n_sens],
-                    "comment": f"{n_sens} foot contact ({', '.join(env['observation_joint_sensor_keys'])})",
+                    "comment": f"{n_sens} 个足底接触（{', '.join(env['observation_joint_sensor_keys'])}）",
                 }
             )
 
@@ -341,7 +341,7 @@ def main() -> None:
             _make_shared_side_exo(cfg, env, joint, args.exo_net)
 
         out = out_dir / f"imitation_22_{device}{suffix}.json"
-        out.write_text(json.dumps(cfg, indent=4) + "\n")
+        out.write_text(json.dumps(cfg, indent=4, ensure_ascii=False) + "\n")
         pen = cfg["env_params"]["reward_keys_and_weights"]["muscle_activation_penalty"]
         print(f"  {out.name:46} joint={joint:12} qpos={qpos_range} qvel={qvel_range} act_penalty={pen}")
 

@@ -133,32 +133,32 @@
                             {
                                 "type":"range",
                                 "range":[0,8],
-                                "comment":"8 qpos without lumbar_extension"
+                                "comment":"8 个关节位置（不含腰椎伸展）"
                             },
                             {
                                 "type":"range",
                                 "range":[8,17],
-                                "comment":"9 qvel without lumbar_extension"
+                                "comment":"9 个关节速度（不含腰椎伸展）"
                             },
                             {
                                 "type":"range",
                                 "range":[17,28],
-                                "comment":"11 left muscle activation"
+                                "comment":"11 个左侧肌肉激活"
                             },
                             {
                                 "type":"range",
                                 "range":[28,39],
-                                "comment":"11 right muscle activation"
+                                "comment":"11 个右侧肌肉激活"
                             },
                             {
                                 "type":"range",
                                 "range":[39,43],
-                                "comment":"4 foot force"
+                                "comment":"4 个足底受力"
                             },
                             {
                                 "type":"range",
                                 "range":[43,44],
-                                "comment":"target velocity"
+                                "comment":"目标速度"
                             }
                         ],
                     "action":
@@ -167,13 +167,13 @@
                                 "type":"range_mapping",
                                 "range_net":[0,11],
                                 "range_action":[0,11],
-                                "comment":"r 11 muscle activation without exo"
+                                "comment":"右腿 11 个肌肉激活（不含外骨骼）"
                             },
                             {
                                 "type":"range_mapping",
                                 "range_net":[11,22],
                                 "range_action":[11,22],
-                                "comment":"l 11 muscle activation without exo"
+                                "comment":"左腿 11 个肌肉激活（不含外骨骼）"
                             }
                         ]
                 },
@@ -184,12 +184,12 @@
                             {
                                 "type":"range",
                                 "range":[0,2],
-                                "comment":"2 ankle angle in 8 qpos without lumbar_extension"
+                                "comment":"8 个关节位置（不含腰椎伸展）中的 2 个踝关节角度"
                             },
                             {
                                 "type":"range",
                                 "range":[8,10],
-                                "comment":"2 angkle angular in 9 qvel without lumbar_extension"
+                                "comment":"9 个关节速度（不含腰椎伸展）中的 2 个踝关节角速度"
                             }
                         ],
                     "action":
@@ -198,7 +198,7 @@
                                 "type":"range_mapping",
                                 "range_net":[0,2],
                                 "range_action":[22,24],
-                                "comment":"2 for exo L, R"
+                                "comment":"2 个外骨骼命令（Exo_L、Exo_R）"
                             }
                         ]
                 },
@@ -209,32 +209,32 @@
                             {
                                 "type":"range",
                                 "range":[0,8],
-                                "comment":"8 qpos without lumbar_extension"
+                                "comment":"8 个关节位置（不含腰椎伸展）"
                             },
                             {
                                 "type":"range",
                                 "range":[8,17],
-                                "comment":"9 qvel without lumbar_extension"
+                                "comment":"9 个关节速度（不含腰椎伸展）"
                             },
                             {
                                 "type":"range",
                                 "range":[17,28],
-                                "comment":"11 left muscle activation"
+                                "comment":"11 个左侧肌肉激活"
                             },
                             {
                                 "type":"range",
                                 "range":[28,39],
-                                "comment":"11 right muscle activation"
+                                "comment":"11 个右侧肌肉激活"
                             },
                             {
                                 "type":"range",
                                 "range":[39,43],
-                                "comment":"4 foot force"
+                                "comment":"4 个足底受力"
                             },
                             {
                                 "type":"range",
                                 "range":[43,44],
-                                "comment":"target velocity"
+                                "comment":"目标速度"
                             }
                         ]
                 }

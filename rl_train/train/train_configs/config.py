@@ -18,16 +18,14 @@ class TrainSessionConfigBase:
         class RewardWeights:
             forward_reward: float = 0.01
             muscle_activation_penalty: float = 0.1
-            # Price of device effort, in the same units as muscle_activation_penalty: both terms
-            # are dt times a mean dimensionless effort. Because the muscle mean is taken over 22
-            # actuators and the device mean over 2, the per-actuator price is
-            # muscle_activation_penalty/22 against exo_activation_penalty/2 -- so at the shipped
-            # muscle weight of 10, an exo weight of 0.1 makes one device actuator's effort about
-            # ten times cheaper than one muscle's. Default 0 keeps existing configs unchanged.
+            # 设备力矩的代价，单位与 muscle_activation_penalty 相同：两项都是「时间步长 × 平均无量纲出力」。
+            # 因为肌肉平均是对 22 个执行器取的、设备平均是对 2 个执行器取的，所以单执行器代价分别是
+            # muscle_activation_penalty/22 和 exo_activation_penalty/2 —— 在默认肌肉权重 10 下，
+            # exo 权重取 0.1 时，单个设备执行器的出力大约比单个肌肉便宜十倍。默认值 0 保持现有配置不变。
             exo_activation_penalty: float = 0.0
             muscle_activation_diff_penalty: float = 0.1
 
-            # for reward per step
+            # 按步计算的奖励
             footstep_delta_time: float = 0.0
             average_velocity_per_step: float = 0.0
             muscle_activation_penalty_per_step: float = 0.0
@@ -59,28 +57,25 @@ class TrainSessionConfigBase:
         lumbar_joint_fixed_angle: float = 0.0
         lumbar_joint_damping_value: float = 0.05
 
-        # Geom groups to hide from rendering. Which group holds clutter and which holds hardware
-        # is an authoring convention of whoever built the model, not something the environment can
-        # derive, so it belongs here rather than in code. This replaces an unconditional "hide
-        # group 1" whose comment said it removed the musculoskeletal skin; myolegs22 and myolegs26
-        # put no geom in group 1, so its only remaining effect was to hide STRIDE_L2's entire
-        # six-bar linkage -- 14 geoms -- leaving just the shoe visible. Rendering only: alpha does
-        # not enter contact, mass or constraint computation.
+        # 渲染时需要隐藏的 geom 分组。哪组放杂物、哪组放硬件，是建模者约定的惯例，
+        # 环境无法自动推导，所以放在这里而不是代码里。这取代了原来无条件的「隐藏组 1」——
+        # 原注释说那是为了去掉肌肉骨骼皮肤；但 myolegs22 和 myolegs26 在组 1 中没有 geom，
+        # 它实际唯一的效果是把 STRIDE_L2 的整个六连杆机构（14 个 geom）藏起来，只留下鞋可见。
+        # 仅影响渲染：alpha 不参与接触、质量或约束计算。
         hidden_geom_groups: list[int] = field(default_factory=list)
 
         observation_joint_pos_keys: list[str] = field(default_factory=list)
         observation_joint_vel_keys: list[str] = field(default_factory=list)
         observation_joint_sensor_keys: list[str] = field(default_factory=list)
-        # Joint-limit (constraint-force) sensor names used by the constraint-force
-        # penalty. Empty -> MyoAssistLegBase.JOINT_LIMIT_SENSOR_NAMES default.
+        # 约束力惩罚所用的关节限位（约束力）传感器名称。
+        # 留空则使用 MyoAssistLegBase.JOINT_LIMIT_SENSOR_NAMES 的默认值。
         joint_limit_sensor_keys: list[str] = field(default_factory=list)
 
-        # A10 compose pipeline. When both msk_key and device_key are set, the
-        # model is composed via myoassist_utils.compose.compose_env_model(...)
-        # (human MSK + assistive device + terrain) and the resulting XML string is
-        # used as the model. Leave them None to fall back to the literal
-        # model_path above (escape hatch). terrain is a path to a
-        # myoassist_terrains JSON config, or None for a flat default ground.
+        # A10 组合流水线。当 msk_key 和 device_key 同时设置时，通过
+        # myoassist_utils.compose.compose_env_model(...)（人体肌肉骨骼模型 + 辅助设备 + 地形）
+        # 组合生成模型，并把得到的 XML 字符串作为模型使用。两者都设为 None 时，
+        # 回退到上面的 model_path 原样加载（逃生通道）。terrain 是
+        # myoassist_terrains JSON 配置的路径，或为 None 表示默认平地。
         msk_key: str = None
         device_key: str = None
         terrain: str = None
@@ -88,7 +83,7 @@ class TrainSessionConfigBase:
     env_params: EnvParams = field(default_factory=EnvParams)
 
     """
-    used in TrainAnalyzer
+    用于 TrainAnalyzer
         total_timesteps: int = 300
         min_target_velocity: float = 1.25
         max_target_velocity: float = 1.25
@@ -103,7 +98,7 @@ class TrainSessionConfigBase:
     @dataclass
     class PolicyParams:
         """
-        ActorCriticPolicy parameters:
+        ActorCriticPolicy 参数：
             observation_space: spaces.Space,
             action_space: spaces.Space,
             lr_schedule: Schedule,
@@ -131,7 +126,7 @@ class TrainSessionConfigBase:
         # custom_policy_params: CustomPolicyParams = field(default_factory=CustomPolicyParams)
         @dataclass
         class CustomPolicyParams:
-            # For curriculum learning
+            # 用于课程学习（curriculum learning）
             reset_shared_net_after_load: bool = False
             reset_policy_net_after_load: bool = False
             reset_value_net_after_load: bool = False
@@ -163,8 +158,8 @@ class TrainSessionConfigBase:
         sde_sample_freq: int = -1
         target_kl: float = None
         device: str = "cpu"
-        # Weight on the left/right mirror-symmetry penalty (see rl_train/train/mirror_ppo.py).
-        # 0 disables it, and PPO then behaves exactly as before.
+        # 左右镜像对称惩罚的权重（见 rl_train/train/mirror_ppo.py）。
+        # 设为 0 时禁用，PPO 行为与之前完全一致。
         mirror_coef: float = 0.0
 
     ppo_params: PPOParams = field(default_factory=PPOParams)

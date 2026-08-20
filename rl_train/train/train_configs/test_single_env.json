@@ -1,9 +1,8 @@
 {
-    "comment":"这是 RL 训练的一个测试配置：步数很短，且开启了渲染",
-    "total_timesteps": 1000,
+    "total_timesteps": 1000000,
     "evaluate_param_list":[
         {
-            "num_timesteps": 100,
+            "num_timesteps": 200,
             "min_target_velocity": 1.25,
             "max_target_velocity": 1.25,
             "target_velocity_period": 2,
@@ -14,15 +13,14 @@
         }
     ],
     "logger_params": {
-        "logging_frequency": 1,
-        "evaluate_frequency": 1
+        "logging_frequency": 8
     },
     "env_params": {
         "env_id": "myoAssistLegImitationExo-v0",
-        "num_envs": 1,
+        "num_envs": 16,
         "seed": 1234,
         "safe_height": 0.7,
-        "out_of_trajectory_threshold": 0.6,
+        "out_of_trajectory_threshold": 0.2,
         "flag_random_ref_index": true,
         "control_framerate": 30,
         "physics_sim_framerate": 1200,
@@ -41,7 +39,7 @@
             "hip_flexion_l", "hip_flexion_r",
             "knee_angle_l", "knee_angle_r",
             "pelvis_tilt",
-            "pelvis_ty"
+            "pelvis_tx", "pelvis_ty"
         ],
         "observation_joint_vel_keys": [
             "ankle_angle_l", "ankle_angle_r",
@@ -60,6 +58,7 @@
 
         "reward_keys_and_weights": {
             "qpos_imitation_rewards": {
+                "pelvis_tx": 2.0,
                 "pelvis_ty": 0.1,
                 "pelvis_tilt": 1.0,
                 "hip_flexion_l": 0.2,
@@ -70,6 +69,7 @@
                 "ankle_angle_r": 0.2
             },
             "qvel_imitation_rewards": {
+                "pelvis_tx": 2.0,
                 "pelvis_ty": 0.1,
                 "pelvis_tilt": 0.1,
                 "hip_flexion_l": 0.2,
@@ -80,12 +80,12 @@
                 "ankle_angle_r": 0.1
             },
             "end_effector_imitation_reward": 0.0,
-            "forward_reward": 1.0,
+            "forward_reward": 5.0,
             "muscle_activation_penalty": 0.1,
             "muscle_activation_diff_penalty": 0.1,
 
             "footstep_delta_time": 0.0,
-            "average_velocity_per_step": 0.0,
+            "average_velocity_per_step": 2.0,
             "muscle_activation_penalty_per_step": 0.0,
 
             "joint_constraint_force_penalty": 1.0,
@@ -104,9 +104,9 @@
     },
     "ppo_params": {
         "learning_rate": 0.0001,
-        "n_steps": 256,
-        "batch_size": 256,
-        "n_epochs": 10,
+        "n_steps": 512,
+        "batch_size": 8192,
+        "n_epochs": 30,
         "gamma": 0.99,
         "gae_lambda": 0.95,
         "clip_range": 0.2,
@@ -118,7 +118,7 @@
         "sde_sample_freq": -1,
         "target_kl": 0.01,
 
-        "device": "cpu"
+        "device": "cuda"
     },
     "policy_params": {
         "custom_policy_params": {

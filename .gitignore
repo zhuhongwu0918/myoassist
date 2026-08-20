@@ -114,7 +114,7 @@ venv.bak/
 _build
 dist
 tags
-.vscode/settings.json
+.vscode
 
 # Media #
 .mp4
