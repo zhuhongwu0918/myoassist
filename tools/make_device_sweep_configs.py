@@ -341,7 +341,7 @@ def main() -> None:
             _make_shared_side_exo(cfg, env, joint, args.exo_net)
 
         out = out_dir / f"imitation_22_{device}{suffix}.json"
-        out.write_text(json.dumps(cfg, indent=4, ensure_ascii=False) + "\n")
+        out.write_text(json.dumps(cfg, indent=4) + "\n")
         pen = cfg["env_params"]["reward_keys_and_weights"]["muscle_activation_penalty"]
         print(f"  {out.name:46} joint={joint:12} qpos={qpos_range} qvel={qvel_range} act_penalty={pen}")
 

@@ -27,7 +27,7 @@ class TrainAnalyzer:
         # Should have detail analysis
 
     def analyze_in_sequence(self, log_dir: str, show_plot: bool):
-        with open(os.path.join(log_dir, "session_config.json"), "r", encoding="utf-8") as f:
+        with open(os.path.join(log_dir, "session_config.json"), "r") as f:
             config_dict = json.load(f)
             config = DictionableDataclass.create(TrainSessionConfigBase, config_dict)
 

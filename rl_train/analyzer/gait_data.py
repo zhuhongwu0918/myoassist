@@ -135,7 +135,7 @@ class GaitData:
             json.dump(data, json_file, indent=4)
 
     def read_json_data(self, path):
-        with open(path, "r", encoding="utf-8") as json_file:
+        with open(path, "r") as json_file:
             data_loaded = json.load(json_file)
         self.series_data = data_loaded["series_data"]
         self.metadata = data_loaded["metadata"]

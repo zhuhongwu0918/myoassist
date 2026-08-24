@@ -7,7 +7,7 @@ class ExoImitationTrainSessionConfig(ImitationTrainSessionConfig):
     @dataclass
     class PolicyParams(ImitationTrainSessionConfig.PolicyParams):
         """
-        ActorCriticPolicy parameters:
+        ActorCriticPolicy 参数：
             observation_space: spaces.Space,
             action_space: spaces.Space,
             lr_schedule: Schedule,

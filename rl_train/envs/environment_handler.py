@@ -87,7 +87,10 @@ class EnvironmentHandler:
 
     @staticmethod
     def create_environment(config, is_rendering_on: bool, is_evaluate_mode: bool = False):
+        # 按配置构建仿真环境：加载参考数据 → 确定模型来源（组合 msk+device 或显式 model_path）
+        # → 按渲染/并行需求用 gym.make（单环境）或 SubprocVecEnv（多环境）创建。
 
+        # 参考数据（.npz/.json）先加载好，存在时会作为 gym.make 的 reference_data 参数传入环境
         ref_data_dict = EnvironmentHandler.load_reference_data(config)
 
         # Compose pipeline: when both msk_key and device_key are set, route the
@@ -97,6 +100,7 @@ class EnvironmentHandler:
         # -> from_xml_string). A literal model_path is the escape hatch for a
         # pre-built MJCF. Composed once here; the XML string pickles fine into
         # SubprocVecEnv workers.
+        # 模型来源三要素：组合式环境的 msk_key（人体）、device_key（设备），或直接指定 model_path
         msk_key = config.env_params.msk_key
         device_key = config.env_params.device_key
         model_path = config.env_params.model_path
@@ -104,6 +108,8 @@ class EnvironmentHandler:
         # Compose takes both keys or neither. Half a spec used to fall through to
         # model_path, which is None in every migrated config, and failed inside
         # gym.make without mentioning the key that was actually missing.
+        # msk_key/device_key 必须成对出现：只给一个会落到下面的 model_path 分支（迁移前配置为 None），
+        # 报错时还不会点名到底缺了哪个 key，所以这里提前拦截
         if bool(msk_key) != bool(device_key):
             missing, present = ("device_key", f"msk_key={msk_key!r}") if msk_key else ("msk_key", f"device_key={device_key!r}")
             raise ValueError(
@@ -113,6 +119,7 @@ class EnvironmentHandler:
             )
 
         if msk_key and device_key:
+            # 组合流水线：通过 EnvSpec 的共享校验入口把 {msk, device, terrain} 组合成模型 XML 字符串
             from myoassist_utils.env_spec import EnvSpec
 
             model_path = (
@@ -124,8 +131,10 @@ class EnvironmentHandler:
                 .validate()
                 .compose()
             )
+            # 校验配置声明的动作布局与组合出的模型一致，尽早失败（actuator 数量由模型决定，不在配置里）
             EnvironmentHandler._validate_action_layout(model_path, config)
         elif not model_path:
+            # 两个 key 都没给且没有 model_path：属于配置迁移遗漏，直接给出可操作的报错
             raise ValueError(
                 "No model specified: set msk_key + device_key to compose a model, or "
                 "model_path to load a pre-built MJCF. The shipped configs use the "
@@ -133,6 +142,7 @@ class EnvironmentHandler:
             )
 
         # Base gym.make arguments
+        # gym.make 的公共参数：随机种子、模型路径、环境参数、评估模式
         gym_make_args = {
             "seed": config.env_params.seed,
             "model_path": model_path,
@@ -141,18 +151,23 @@ class EnvironmentHandler:
         }
 
         # Add reference_data only if it exists
+        # 参考数据可选：存在才传入，模仿任务用它计算奖励/对齐步态
         if ref_data_dict is not None:
             gym_make_args["reference_data"] = ref_data_dict
 
         try:
             if is_rendering_on or config.env_params.num_envs == 1:
+                # 渲染开启（子进程里没有可渲染的窗口）或单环境（无需并行）时，在主进程直接创建并 unwrap
                 print(f"{config.env_params.env_id=}")
                 env = gym.make(config.env_params.env_id, **gym_make_args).unwrapped
                 if is_rendering_on:
+                    # 渲染开启：让 MuJoCo 在每个 step 渲染画面到窗口（GLXBadContext 报错的来源，无显示环境需关闭）
                     env.mujoco_render_frames = True
+                # 单环境时强制 num_envs=1，并把 n_steps 对齐 batch_size（rollout 缓冲恰好一个 batch）
                 config.env_params.num_envs = 1
                 config.ppo_params.n_steps = config.ppo_params.batch_size
             else:
+                # 多环境并行：每个子进程跑一个环境，父进程通过 SubprocVecEnv 统一 step/reset
                 env = SubprocVecEnv(
                     [
                         lambda: (gym.make(config.env_params.env_id, **gym_make_args)).unwrapped
@@ -254,6 +269,7 @@ class EnvironmentHandler:
 
         return custom_callback
 
+    # This function is used to create a stable-baselines3 model based on the provided configuration and environment.
     @staticmethod
     def get_stable_baselines3_model(config: TrainSessionConfigBase, env, trained_model_path: str | None = None):
         import stable_baselines3
@@ -261,12 +277,15 @@ class EnvironmentHandler:
         from rl_train.train.policies.rl_agent_exo import HumanExoActorCriticPolicy
 
         if config.env_params.env_id in _EXO_ENV_IDS:
+            #env_id 都是 "myoAssistLegImitationExo-v0"，命中 _EXO_ENV_IDS = ("myoAssistLegImitationExo-v0",)
             policy_class = HumanExoActorCriticPolicy
             print("Using HumanExoActorCriticPolicy")
         else:
             policy_class = HumanActorCriticPolicy
             print("Using HumanActorCriticPolicy")
         if trained_model_path is not None:
+            #是否加载已训模型，trained_model_path 在训练入口为 None，跳过。
+            #评估时"拿个现成模型来分析步态"，不再训练。
             print(f"Loading trained model from {trained_model_path}")
             model = stable_baselines3.PPO.load(
                 trained_model_path,
@@ -274,6 +293,8 @@ class EnvironmentHandler:
                 custom_objects={"policy_class": policy_class},
             )
         elif config.env_params.prev_trained_policy_path:
+            #是否从预训练策略继续训练，prev_trained_policy_path 在训练入口为 None，跳过。
+            #训练时"从旧权重起步接着练"，带超参 + 可选网络重置
             print(f"Loading previous trained policy from {config.env_params.prev_trained_policy_path}")
             # when should I reset the (value)network?
             model = stable_baselines3.PPO.load(
@@ -294,8 +315,10 @@ class EnvironmentHandler:
             ppo_kwargs = DictionableDataclass.to_dict(config.ppo_params)
             mirror_coef = ppo_kwargs.pop("mirror_coef", 0.0)
             if mirror_coef > 0:
+                # ppo_params 里没有 mirror_coef 字段，pop 取默认值 0.0，不走 MirrorPPO
                 from rl_train.train.mirror_ppo import MirrorPPO
-
+                # stable_baselines3.PPO 的子类，在标准 PPO 上加了"左右镜像对称惩罚"。
+                # 把观测左右对调后让策略再算一次动作，再对调回来，强制它和原输出一致。
                 obs_perm, act_perm, n_muscle = EnvironmentHandler._mirror_permutations(config)
                 model = MirrorPPO(
                     policy=policy_class,
@@ -309,7 +332,7 @@ class EnvironmentHandler:
                     **ppo_kwargs,
                 )
             else:
-                model = stable_baselines3.PPO(
+                model = stable_baselines3.PPO( #普通的 stable_baselines3.PPO（不是 MirrorPPO，也不是加载已有模型）
                     policy=policy_class,
                     env=env,
                     policy_kwargs=DictionableDataclass.to_dict(config.policy_params),

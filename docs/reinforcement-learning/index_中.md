@@ -10,6 +10,7 @@ MyoAssist 的强化学习（RL）流程使用 **[Stable-Baselines3 (SB3) PPO](ht
 
 **观测空间（Observation Space）：**
 在我们的环境中，智能体接收的观测包括：
+
 - 关节角度
 - 关节速度
 - 肌肉激活
@@ -18,6 +19,7 @@ MyoAssist 的强化学习（RL）流程使用 **[Stable-Baselines3 (SB3) PPO](ht
 
 **动作空间（Action Space）：**
 智能体输出控制以下内容的动作：
+
 - 肌肉激活（用于人体 actor 网络）
 - 外骨骼控制值（用于外骨骼 actor 网络）
 
@@ -66,11 +68,11 @@ MyoAssist 的强化学习（RL）流程使用 **[Stable-Baselines3 (SB3) PPO](ht
 
 以下是 [`rl_train`](https://github.com/neumovelab/myoassist/tree/main/rl_train/) 文件夹中主要入口点脚本的快速概览：
 
-| 文件 | 用途 |
-|------|---------|
+| 文件                                                                                                   | 用途                                                                             |
+| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
 | [`run_sim_minimal.py`](https://github.com/neumovelab/myoassist/blob/main/rl_train/run_sim_minimal.py) | 创建和测试 MyoAssist RL 环境的最简单方法。不进行训练，仅创建环境并执行随机动作。 |
-| [`run_train.py`](https://github.com/neumovelab/myoassist/blob/main/rl_train/run_train.py) | 运行 RL 训练会话的主要入口点。加载配置、设置环境并开始训练。 |
-| [`run_policy_eval.py`](https://github.com/neumovelab/myoassist/blob/main/rl_train/run_policy_eval.py) | 评估和分析已训练策略的入口点。用于测试策略性能并生成分析结果。 |
+| [`run_train.py`](https://github.com/neumovelab/myoassist/blob/main/rl_train/run_train.py)             | 运行 RL 训练会话的主要入口点。加载配置、设置环境并开始训练。                     |
+| [`run_policy_eval.py`](https://github.com/neumovelab/myoassist/blob/main/rl_train/run_policy_eval.py) | 评估和分析已训练策略的入口点。用于测试策略性能并生成分析结果。                   |
 
 ## 快速测试命令
 
@@ -83,15 +85,17 @@ python rl_train/run_sim_minimal.py
 ```
 
 - mac：
+
 ```bash
 mjpython rl_train/run_sim_minimal.py
 ```
-> **注意：**
-如果你在 macOS 上需要 MuJoCo 可视化器，只需用 `mjpython` 代替 `python` 运行脚本。
-你不需要安装任何额外的东西。只需更改命令：
 
 > **注意：**
-如果你看到错误消息 `ModuleNotFoundError: No module named 'flatten_dict'`，只需再次运行该命令。这通常会自动解决问题。
+> 如果你在 macOS 上需要 MuJoCo 可视化器，只需用 `mjpython` 代替 `python` 运行脚本。
+> 你不需要安装任何额外的东西。只需更改命令：
+
+> **注意：**
+> 如果你看到错误消息 `ModuleNotFoundError: No module named 'flatten_dict'`，只需再次运行该命令。这通常会自动解决问题。
 
 <!-- ![run_sim_minimal.py 的结果](https://myoassist.neumove.org/assets/rl_random_action_tutorial_env.png)-->
 
@@ -100,6 +104,7 @@ mjpython rl_train/run_sim_minimal.py
 </p>
 
 **作用：**
+
 - 展示创建一个 Gym 包装的 MuJoCo 仿真环境的示例
 - 不进行实际训练 - 仅环境创建示例
 
@@ -108,14 +113,17 @@ mjpython rl_train/run_sim_minimal.py
 ### 2. 快速训练测试
 
 运行一个最小训练会话以验证一切正常：
+
 ```bash
 python rl_train/run_train.py --config_file_path rl_train/train/train_configs/test.json --flag_rendering
 ```
+
 <!-- ```bash
 python rl_train/run_train.py --config_file_path rl_train/train/train_configs/imitation_tutorial_22_separated_net_partial_obs.json --config.total_timesteps 12 --config.env_params.num_envs 1 --config.ppo_params.n_steps 4 --config.ppo_params.batch_size 4 --config.logger_params.logging_frequency 1 --config.logger_params.evaluate_frequency 1 --flag_rendering
 ``` -->
 
 **作用：**
+
 - 运行实际的强化学习训练
 - 只训练很少的时间步
 - 使用 1 个环境（资源占用最小）
@@ -130,6 +138,7 @@ python rl_train/run_train.py --config_file_path rl_train/train/train_configs/imi
 # 结果位置
 rl_train/results/train_session_[date-time]/
 ```
+
 <p align="center">
   <img src="https://myoassist.neumove.org/assets/train_session_result.png" alt="训练会话结果示例" width="50%">
 </p>
@@ -137,6 +146,7 @@ rl_train/results/train_session_[date-time]/
 并发运行永远不会共享目录。训练会占用 `train_session_[date-time]`，当秒级时间戳已被占用时，会依次使用 `train_session_[date-time]_1`、`_2` 等。
 
 **你会找到的内容：**
+
 - `analyze_results_[timesteps]_[evaluate_number]`：训练期间写入的分析结果，由学习回调每 `logger_params.evaluate_frequency` 次 rollout 运行的分析器生成
 - `session_config.json`：本次训练使用的配置
 - `train_log.json`：训练日志数据
@@ -179,14 +189,14 @@ python rl_train/run_policy_eval.py [path/to/trainsession/folder]
 
 > 将 `run_policy_eval.py` 指向你生成的任何 `train_session_*` 目录。
 
-| 标志 | 含义 |
-|------|---------|
-| `--steps N` | 覆盖每次 rollout 的 `num_timesteps`。配置默认为 200 步，约 5 个步幅。适用于已训练的会话。 |
-| `--regen` | 即使评估步态数据已存在也重新生成。 |
-| `--no-show` | 跳过弹出式合成窗口。 |
-| `--varying` | 将 `evaluate_param_list` 替换为单个 SINUSOIDAL 0.8-1.4 m/s 的 rollout，并生成速度跟踪合成图。 |
-| `--cmap {rainbow,teal,bluered}` | 变速合成图的速度颜色映射。 |
-| `--legacy-plots` | 同时写入旧版逐面板 PNG。 |
+| 标志                              | 含义                                                                                           |
+| --------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `--steps N`                     | 覆盖每次 rollout 的`num_timesteps`。配置默认为 200 步，约 5 个步幅。适用于已训练的会话。     |
+| `--regen`                       | 即使评估步态数据已存在也重新生成。                                                             |
+| `--no-show`                     | 跳过弹出式合成窗口。                                                                           |
+| `--varying`                     | 将`evaluate_param_list` 替换为单个 SINUSOIDAL 0.8-1.4 m/s 的 rollout，并生成速度跟踪合成图。 |
+| `--cmap {rainbow,teal,bluered}` | 变速合成图的速度颜色映射。                                                                     |
+| `--legacy-plots`                | 同时写入旧版逐面板 PNG。                                                                       |
 
 训练后，你的 `train_session` 目录内会创建一个 `analyze_results` 文件夹。
 该文件夹包含可视化智能体性能的各种图表和视频。
@@ -204,6 +214,7 @@ python rl_train/run_policy_eval.py [path/to/trainsession/folder]
 有关如何自定义这些参数的更多详情，请参见[RL 配置](02_configuration_zh.md)部分。
 
 ## 迁移学习
+
 <img src="https://myoassist.neumove.org/assets/transfer_learning_explanation.png" alt="迁移学习" style="max-width: 100%; height: auto;">
 
 ```bash
@@ -215,24 +226,30 @@ python rl_train/run_train.py --config_file_path [path/to/transfer_learning/confi
 > **注意：** `[path/to/pretrained_model]` 应指向一个 `.zip` 文件，但路径中不要包含 `.zip` 扩展名。
 
 ## 实时策略运行
+
 你可以在实时仿真中运行训练好的策略：
+
 <p align="center">
   <img src="https://myoassist.neumove.org/assets/realtime_eval_flat_tutorial.gif" alt="run_sim_minimal.py 的结果" width="50%">
 </p>
 
 - windows：
+
 ```bash
 python rl_train/run_train.py --config_file_path [path/to/config.json] --config.env_params.prev_trained_policy_path [path/to/model_file] --flag_realtime_evaluate
 ```
 
 - mac：
+
 ```bash
 mjpython rl_train/run_train.py --config_file_path [path/to/config.json] --config.env_params.prev_trained_policy_path [path/to/model_file] --flag_realtime_evaluate
 ```
 
 **参数：**
+
 - `[path/to/config.json]`：train_session 文件夹中 JSON 文件的路径
 - `[path/to/model_file]`：模型文件（.zip）的路径，不带扩展名。它位于 train_models 文件夹中
+
 <p align="center">
   <img src="https://myoassist.neumove.org/assets/train_models.png" alt="已训练模型" width="50%">
 </p>
